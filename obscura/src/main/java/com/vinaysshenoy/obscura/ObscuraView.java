@@ -8,8 +8,8 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import com.vinaysshenoy.obscura.camera.controllers.BaseController;
-import com.vinaysshenoy.obscura.camera.controllers.jellybean.CameraControllerJellybean;
-import com.vinaysshenoy.obscura.camera.controllers.lollipop.CameraControllerLollipop;
+import com.vinaysshenoy.obscura.camera.controllers.vintage.CameraControllerVintage;
+import com.vinaysshenoy.obscura.camera.controllers.modern.CameraControllerModern;
 
 /**
  * Created by vinaysshenoy on 19/03/16.
@@ -45,9 +45,9 @@ public class ObscuraView extends FrameLayout {
     private void initController() {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            controller = new CameraControllerLollipop(textureView);
+            controller = new CameraControllerModern(textureView);
         } else {
-            controller = new CameraControllerJellybean(textureView);
+            controller = new CameraControllerVintage(textureView);
         }
     }
 

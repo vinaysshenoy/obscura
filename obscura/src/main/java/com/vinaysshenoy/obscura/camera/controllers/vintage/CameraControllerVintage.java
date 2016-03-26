@@ -1,4 +1,4 @@
-package com.vinaysshenoy.obscura.camera.controllers.jellybean;
+package com.vinaysshenoy.obscura.camera.controllers.vintage;
 
 import android.hardware.Camera;
 import android.support.annotation.NonNull;
@@ -14,10 +14,10 @@ import com.vinaysshenoy.obscura.camera.controllers.BaseController;
  * <p/>
  * Created by vinaysshenoy on 19/03/16.
  */
-public class CameraControllerJellybean extends BaseController {
+public class CameraControllerVintage extends BaseController {
 
 
-    public CameraControllerJellybean(@NonNull TextureView textureView) {
+    public CameraControllerVintage(@NonNull TextureView textureView) {
         super(textureView);
     }
 
@@ -36,5 +36,10 @@ public class CameraControllerJellybean extends BaseController {
         public CameraOpenException(String detailMessage, Throwable throwable) {
             super(detailMessage, throwable);
         }
+    }
+
+    @Override
+    public boolean isModernCameraApi() {
+        return false;
     }
 }

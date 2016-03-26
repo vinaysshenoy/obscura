@@ -13,6 +13,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresPermission;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -111,6 +113,7 @@ public final class Obscura {
         return cameraDescList;
     }
 
+
     public static final class CameraDesc {
 
         public static final int FACING_FRONT = 1;
@@ -127,6 +130,7 @@ public final class Obscura {
         }
 
         @IntDef({FACING_FRONT, FACING_BACK, FACING_EXTERNAL})
+        @Retention(RetentionPolicy.SOURCE)
         @interface Facing {
         }
 

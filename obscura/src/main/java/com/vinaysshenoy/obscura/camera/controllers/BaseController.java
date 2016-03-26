@@ -1,19 +1,22 @@
 package com.vinaysshenoy.obscura.camera.controllers;
 
+import android.Manifest;
+import android.content.Context;
 import android.graphics.Matrix;
 import android.graphics.RectF;
 import android.graphics.SurfaceTexture;
 import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresPermission;
 import android.util.Log;
 import android.util.SparseIntArray;
 import android.view.Surface;
 import android.view.TextureView;
 
+import com.vinaysshenoy.obscura.Obscura;
 import com.vinaysshenoy.obscura.Utils;
 import com.vinaysshenoy.obscura.camera.Size;
 
@@ -31,6 +34,7 @@ public abstract class BaseController {
      * Conversion from screen rotation to JPEG orientation.
      */
     protected static final SparseIntArray ORIENTATIONS = new SparseIntArray();
+
     private static final String TAG = "BaseController";
 
     static {
@@ -40,6 +44,12 @@ public abstract class BaseController {
         ORIENTATIONS.append(Surface.ROTATION_270, 180);
     }
 
+    private TextureView textureView;
+    private HandlerThread backgroundThread;
+    private Handler backgroundHandler;
+    private Size previewSize;
+
+    private Context context;
     private final TextureView.SurfaceTextureListener surfaceTextureListener = new TextureView.SurfaceTextureListener() {
         @Override
         public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
@@ -61,13 +71,12 @@ public abstract class BaseController {
 
         }
     };
-    private TextureView textureView;
-    private HandlerThread backgroundThread;
-    private Handler backgroundHandler;
-    private Size previewSize;
+    private Obscura.CameraDesc cameraToUse;
+    private boolean isPreviewHappening;
 
     protected BaseController(@NonNull TextureView textureView) {
         this.textureView = textureView;
+        this.context = textureView.getContext();
     }
 
     /**
@@ -124,7 +133,8 @@ public abstract class BaseController {
         return backgroundHandler;
     }
 
-    public void onResume() {
+    @RequiresPermission(Manifest.permission.CAMERA)
+    public void startPreview() {
 
         startBackgroundThread();
 
@@ -147,11 +157,11 @@ public abstract class BaseController {
      * @param viewWidth  The width of `textureView`
      * @param viewHeight The height of `textureView`
      */
-    private void configureTransform(int viewWidth, int viewHeight) {
+    protected void configureTransform(int viewWidth, int viewHeight) {
         if (textureView == null || previewSize == null) {
             return;
         }
-        int rotation = Utils.windowManagerFromContext(textureView.getContext()).getDefaultDisplay().getRotation();
+        int rotation = Utils.windowManagerFromContext(context).getDefaultDisplay().getRotation();
         Matrix matrix = new Matrix();
         RectF viewRect = new RectF(0, 0, viewWidth, viewHeight);
         RectF bufferRect = new RectF(0, 0, previewSize.getHeight(), previewSize.getWidth());
@@ -171,9 +181,25 @@ public abstract class BaseController {
         textureView.setTransform(matrix);
     }
 
-    protected abstract void openCamera(int width, int height);
+    private void openCamera(int width, int height) {
 
-    public void onPause() {
+        if (Utils.isCameraPermissionGranted(context)) {
+            cameraToUse = getCameraToUse();
+        }
+    }
+
+    @Nullable
+    private Obscura.CameraDesc getCameraToUse() {
+
+        if(cameraToUse != null) {
+            return cameraToUse;
+        }
+
+        final List<Obscura.CameraDesc> cameraDescs = Obscura.get().camerasInfo(context);
+        return null;
+    }
+
+    public void stopPreview() {
 
         stopBackgroundThread();
     }
@@ -181,7 +207,7 @@ public abstract class BaseController {
     private void startBackgroundThread() {
         backgroundThread = new HandlerThread("CameraBackground");
         backgroundThread.start();
-        backgroundHandler = initBackgroundHandler(backgroundThread.getLooper());
+        backgroundHandler = new Handler(backgroundThread.getLooper());
     }
 
     private void stopBackgroundThread() {
@@ -200,8 +226,12 @@ public abstract class BaseController {
         }
     }
 
-    @NonNull
-    protected abstract Handler initBackgroundHandler(@NonNull Looper looper);
+    public void setCameraToUse(@Nullable Obscura.CameraDesc cameraToUse) {
+        this.cameraToUse = cameraToUse;
+        //TODO: Restart preview if its already happening
+    }
+
+    public abstract boolean isModernCameraApi();
 
     /**
      * Compares two {@code Size}s based on their areas.
