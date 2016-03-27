@@ -13,11 +13,11 @@ import android.view.WindowManager;
 /**
  * Created by vinaysshenoy on 19/03/16.
  */
-public final class Utils {
+public final class ObscuraUtils {
 
     private static final String TAG = "Utils";
 
-    private Utils() {
+    private ObscuraUtils() {
 
     }
 
@@ -34,7 +34,7 @@ public final class Utils {
     public static boolean isCameraPermissionGranted(@NonNull Context context) {
 
         return ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
-                != PackageManager.PERMISSION_GRANTED;
+                == PackageManager.PERMISSION_GRANTED;
     }
 
     public static WindowManager windowManagerFromContext(@NonNull Context context) {

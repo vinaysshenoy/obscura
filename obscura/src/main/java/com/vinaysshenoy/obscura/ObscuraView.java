@@ -2,6 +2,7 @@ package com.vinaysshenoy.obscura;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.view.ViewGroup;
@@ -9,7 +10,6 @@ import android.widget.FrameLayout;
 
 import com.vinaysshenoy.obscura.camera.controllers.BaseController;
 import com.vinaysshenoy.obscura.camera.controllers.vintage.CameraControllerVintage;
-import com.vinaysshenoy.obscura.camera.controllers.modern.CameraControllerModern;
 
 /**
  * Created by vinaysshenoy on 19/03/16.
@@ -22,33 +22,45 @@ public class ObscuraView extends FrameLayout {
 
     public ObscuraView(Context context) {
         super(context);
+        init(context, null);
     }
 
     public ObscuraView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        init(context, attrs);
     }
 
     public ObscuraView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        init(context, attrs);
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public ObscuraView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
+        init(context, attrs);
     }
 
     private void init(Context context, AttributeSet attrs) {
+
+        setBackgroundColor(Color.BLACK);
         addTextureView(context);
         initController();
     }
 
     private void initController() {
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        controller = new CameraControllerVintage(textureView);
+
+        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             controller = new CameraControllerModern(textureView);
         } else {
             controller = new CameraControllerVintage(textureView);
-        }
+        }*/
+    }
+
+    public BaseController controller() {
+        return controller;
     }
 
     private void addTextureView(Context context) {

@@ -1,8 +1,9 @@
 package com.vinaysshenoy.obscura.camera.controllers.modern;
 
 import android.support.annotation.NonNull;
-import android.view.TextureView;
 
+import com.vinaysshenoy.obscura.AutoFitTextureView;
+import com.vinaysshenoy.obscura.Obscura;
 import com.vinaysshenoy.obscura.camera.controllers.BaseController;
 
 /**
@@ -10,8 +11,18 @@ import com.vinaysshenoy.obscura.camera.controllers.BaseController;
  */
 public class CameraControllerModern extends BaseController {
 
-    public CameraControllerModern(@NonNull TextureView textureView) {
+    public CameraControllerModern(@NonNull AutoFitTextureView textureView) {
         super(textureView);
+    }
+
+    @Override
+    protected void closeCamera() {
+
+    }
+
+    @Override
+    protected void setupCamera(@NonNull Obscura.CameraDesc cameraDesc, int width, int height) {
+
     }
 
     @Override
